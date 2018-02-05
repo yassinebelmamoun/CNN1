@@ -19,7 +19,7 @@ import skimage
 import skimage.measure
 
 data_path = 'raw/'
-save_path = '/mnt/data1/yihuihe/mnc_small/'
+save_path = 'save/'
 image_rows = 420
 image_cols = 580
 
@@ -99,7 +99,7 @@ def detseg():
     np.save(save_path+'mask.npy',imgs_mask_train.astype(np.bool))
     print('save mask')
     del imgs_train
-    
+
     bboxes=[]
     masks=[]
 
@@ -142,7 +142,7 @@ def detseg():
     plt.imshow(H, interpolation='nearest', origin='low',
                 extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
     plt.show()
-    
+
     np.save(save_path+'roidb.npy',np.array(bboxes))
     np.save(save_path+'maskdb.npy',np.array(masks))
 
