@@ -28,8 +28,7 @@ image_cols = 580
 def create_train_data():
     train_data_path = os.path.join(data_path, 'train')
     images = os.listdir(train_data_path)
-    total = len(images) / 2
-
+    total = int(len(images) / 2)
     imgs = np.ndarray((total, 1, image_rows, image_cols), dtype=np.uint8)
     imgs_mask = np.ndarray((total, 1, image_rows, image_cols), dtype=np.uint8)
 
@@ -77,7 +76,7 @@ def detseg():
     out_rows=160
     out_cols=224
     imgs_train = np.load('imgs_train.npy')
-    imgs_train=preprocess(imgs_train, out_rows,out_cols).astype(np.float32)
+    imgs_train=preprocess(imgs_train, out_rows, out_cols).astype(np.float32)
     mean_image=imgs_train.mean(0)[np.newaxis,]
     imgs_train -=mean_image
     print(np.histogram(imgs_train))
@@ -116,8 +115,8 @@ def detseg():
         instance_masks=[]
         for ins in range(CCNum):
             foregroundIdx=CCMap==ins
-            # plt.imshow(foregroundIdx)
-            # plt.show()
+            plt.imshow(foregroundIdx)
+            plt.show()
             area=np.sum(foregroundIdx)
             if area<10:
                 CCMap[foregroundIdx]=-1

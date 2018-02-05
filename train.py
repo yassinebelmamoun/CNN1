@@ -128,8 +128,8 @@ def train_and_predict():
     print('Loading and preprocessing train data...')
     print('-'*30)
     # imgs_train, imgs_mask_train = load_train_data()
-    imgs_train=np.load("/mnt/data1/yihuihe/mnc/data.npy")
-    imgs_mask_train=np.load("/mnt/data1/yihuihe/mnc/mask.npy")
+    imgs_train=np.load("save/data.npy")
+    imgs_mask_train=np.load("save/mask.npy")
     imgs_train = imgs_train.astype('float32')
     imgs_mask_train = imgs_mask_train.astype('float32')
 
@@ -151,35 +151,35 @@ def train_and_predict():
     print('Creating and compiling model...')
     print('-'*30)
     model = get_unet()
-    
-    # model_checkpoint = ModelCheckpoint('unet.hdf5', monitor='loss',verbose=1, save_best_only=True)
+    """ START COMMENTING """ 
+    model_checkpoint = ModelCheckpoint('unet.hdf5', monitor='loss',verbose=1, save_best_only=True)
 
-    # print('-'*30)
-    # print('Fitting model...')
-    # print('-'*30)
-    # model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=20, verbose=1, shuffle=True,callbacks=[model_checkpoint])
-    
-    # batch_size=32
-    # max_iters=10000
-    # for i in range(max_iters):
-    #     data_batch=np.ndarray((batch_size,1,img_rows,img_cols))
-    #     mask_batch=np.ndarray((batch_size,1,img_rows,img_cols))
-        
-    #     for img in range(batch_size):
-    #         idx=np.random.randint(total)
-    #         data_batch[img,0],mask_batch[img,0]=augmentation(imgs_train[idx],imgs_mask_train[idx])
-    #         # plt.subplot(121)
-    #         # plt.imshow(data_batch[img,0])
-    #         # plt.subplot(122)
-    #         # plt.imshow(mask_batch[img,0])
-    #         # plt.show()
-    #         data_batch-=mean
-    #         data_batch/=std
-    #         print(np.histogram(data_batch))
-    #         print(np.histogram(mask_batch))
+    print('-'*30)
+    print('Fitting model...')
+    print('-'*30)
+    model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=20, verbose=1, shuffle=True,callbacks=[model_checkpoint])
 
-    #     model.train_on_batch(data_batch,mask_batch)
+    batch_size=32
+    max_iters=10000
+    for i in range(max_iters):
+        data_batch=np.ndarray((batch_size,1,img_rows,img_cols))
+        mask_batch=np.ndarray((batch_size,1,img_rows,img_cols))
 
+        for img in range(batch_size):
+            idx=np.random.randint(total)
+            data_batch[img,0],mask_batch[img,0]=augmentation(imgs_train[idx],imgs_mask_train[idx])
+            plt.subplot(121)
+            plt.imshow(data_batch[img,0])
+            plt.subplot(122)
+            plt.imshow(mask_batch[img,0])
+            plt.show()
+            data_batch-=mean
+            data_batch/=std
+            print(np.histogram(data_batch))
+            print(np.histogram(mask_batch))
+
+        model.train_on_batch(data_batch,mask_batch)
+    """ END OF COMMENT """
     print('-'*30)
     print('Loading and preprocessing test data...')
     print('-'*30)
@@ -187,8 +187,8 @@ def train_and_predict():
     imgs_test = preprocess(imgs_test) # TODO: bug
 
     imgs_test = imgs_test.astype('float32')
-    imgs_test -= np.load('/mnt/data1/yihuihe/mnc/mean.npy')
-    imgs_test /=np.load('/mnt/data1/yihuihe/mnc/std.npy')
+    imgs_test -= np.load('save/mean.npy')
+    imgs_test /=np.load('save/std.npy')
 
     print('-'*30)
     print('Loading saved weights...')
