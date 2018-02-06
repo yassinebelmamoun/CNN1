@@ -13,8 +13,8 @@ from data import load_train_data, load_test_data
 from skimage.transform import rotate, resize
 from skimage import data
 import matplotlib.pyplot as plt
-img_rows = 160
-img_cols = 224
+img_rows = 160 
+img_cols = 224 
 
 smooth = 1.
 
@@ -82,14 +82,14 @@ def get_unet():
 
     conv5 = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(pool4)
     conv5 = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(conv5)
-    # pool5 = MaxPooling2D(pool_size=(2, 2))(conv5)
+    pool5 = MaxPooling2D(pool_size=(2, 2))(conv5)
 
-    # convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(pool5)
-    # convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(convdeep)
+    convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(pool5)
+    convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(convdeep)
     
-    # upmid = merge([Convolution2D(512, 2, 2, border_mode='same')(UpSampling2D(size=(2, 2))(convdeep)), conv5], mode='concat', concat_axis=1)
-    # convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(upmid)
-    # convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(convmid)
+    upmid = merge([Convolution2D(512, 2, 2, border_mode='same')(UpSampling2D(size=(2, 2))(convdeep)), conv5], mode='concat', concat_axis=1)
+    convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(upmid)
+    convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(convmid)
 
     up6 = merge([Convolution2D(256, 2, 2,activation='relu', border_mode='same')(UpSampling2D(size=(2, 2))(conv5)), conv4], mode='concat', concat_axis=1)
     conv6 = Convolution2D(256, 3, 3, activation='relu', border_mode='same')(up6)
@@ -157,8 +157,8 @@ def train_and_predict():
     print('-'*30)
     print('Fitting model...')
     print('-'*30)
-    model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=20, verbose=1, shuffle=True,callbacks=[model_checkpoint])
-
+    model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=2, verbose=1, shuffle=True,callbacks=[model_checkpoint])
+    """
     batch_size=32
     max_iters=10000
     for i in range(max_iters):
@@ -179,6 +179,7 @@ def train_and_predict():
             print(np.histogram(mask_batch))
 
         model.train_on_batch(data_batch,mask_batch)
+    """
     """ END OF COMMENT """
     print('-'*30)
     print('Loading and preprocessing test data...')

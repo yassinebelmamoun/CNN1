@@ -1,3 +1,4 @@
+binary_*
 raw/
 *.pyc
 *.npy

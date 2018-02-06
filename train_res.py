@@ -16,7 +16,7 @@ from keras.layers.convolutional import (
     AveragePooling2D
 )
 from keras.layers.normalization import BatchNormalization
-from keras.utils.visualize_util import plot
+from keras.utils.vis_utils import plot_model as plot
 import cv2
 import numpy as np
 from keras.models import Model
@@ -194,26 +194,25 @@ def resnet():
 
 
 def main():
-    # import time
-    # start = time.time()
-    # model = resnet()
-    # duration = time.time() - start
-    # print("{} s to make model".format(duration))
+    import time
+    start = time.time()
+    model = resnet()
+    duration = time.time() - start
+    print("{} s to make model".format(duration))
 
-    # start = time.time()
-    # model.output
-    # duration = time.time() - start
-    # print("{} s to get output".format(duration))
+    start = time.time()
+    model.output
+    duration = time.time() - start
+    print("{} s to get output".format(duration))
 
-    # start = time.time()
-    # model.compile(loss="categorical_crossentropy", optimizer="sgd")
-    # duration = time.time() - start
-    # print("{} s to get compile".format(duration))
+    start = time.time()
+    model.compile(loss="categorical_crossentropy", optimizer="sgd")
+    duration = time.time() - start
+    print("{} s to get compile".format(duration))
 
-    # current_dir = os.path.dirname(os.path.realpath(__file__))
-    # model_path = os.path.join(current_dir, "resnet_50.png")
-    # plot(model, to_file=model_path, show_shapes=True)
-    # exit()
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    model_path = os.path.join(current_dir, "resnet_50.png")
+    plot(model, to_file=model_path, show_shapes=True)
 # -----------------------------------------------------------------------------
     print('-'*30)
     print('Loading and preprocessing train data...')

@@ -20,14 +20,15 @@ import skimage.measure
 
 data_path = 'raw/'
 save_path = 'save/'
-image_rows = 420
-image_cols = 580
+image_rows = 5000 
+image_cols = 5000
 
 
 
 def create_train_data():
     train_data_path = os.path.join(data_path, 'train')
     images = os.listdir(train_data_path)
+    print(images)
     total = int(len(images) / 2)
     imgs = np.ndarray((total, 1, image_rows, image_cols), dtype=np.uint8)
     imgs_mask = np.ndarray((total, 1, image_rows, image_cols), dtype=np.uint8)
@@ -42,7 +43,6 @@ def create_train_data():
         image_mask_name = image_name.split('.')[0] + '_mask.tif'
         img = cv2.imread(os.path.join(train_data_path, image_name), cv2.IMREAD_GRAYSCALE)
         img_mask = cv2.imread(os.path.join(train_data_path, image_mask_name), cv2.IMREAD_GRAYSCALE)
-
         img = np.array([img])
         img_mask = np.array([img_mask])
 
@@ -116,7 +116,6 @@ def detseg():
         for ins in range(CCNum):
             foregroundIdx=CCMap==ins
             plt.imshow(foregroundIdx)
-            plt.show()
             area=np.sum(foregroundIdx)
             if area<10:
                 CCMap[foregroundIdx]=-1
@@ -140,7 +139,6 @@ def detseg():
     H, xedges, yedges=np.histogram2d(acc_width,acc_height, bins=50)
     plt.imshow(H, interpolation='nearest', origin='low',
                 extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
-    plt.show()
 
     np.save(save_path+'roidb.npy',np.array(bboxes))
     np.save(save_path+'maskdb.npy',np.array(masks))
@@ -182,7 +180,7 @@ def load_test_data():
     return imgs_test, imgs_id
 
 if __name__ == '__main__':
-    # create_train_data()
-    # create_test_data()
+    create_train_data()
+    create_test_data()
 
     detseg()
