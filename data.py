@@ -1,5 +1,4 @@
 from __future__ import print_function
-
 import os
 import numpy as np
 
@@ -20,7 +19,7 @@ import skimage.measure
 
 data_path = 'raw/'
 save_path = 'save/'
-image_rows = 5000 
+image_rows = 5000
 image_cols = 5000
 
 
@@ -73,24 +72,20 @@ def preprocess(imgs, img_rows,img_cols):
 def detseg():
     # out_rows=240
     # out_cols=320
-    out_rows=160
-    out_cols=224
+    # out_rows=160
+    # out_cols=224
+    out_rows= 160
+    out_cols= 160
     imgs_train = np.load('imgs_train.npy')
     imgs_train=preprocess(imgs_train, out_rows, out_cols).astype(np.float32)
     mean_image=imgs_train.mean(0)[np.newaxis,]
     imgs_train -=mean_image
-    print(np.histogram(imgs_train))
     std_image=imgs_train.std(0)[np.newaxis,]
     imgs_train /=std_image
-    print(np.histogram(imgs_train))
 
     imgs_mask_train = np.load('imgs_mask_train.npy')
     imgs_mask_train=preprocess(imgs_mask_train, out_rows,out_cols)
-    imgs_mask_train[imgs_mask_train<=50]=False
-    imgs_mask_train[imgs_mask_train>50]=True
-    print(np.histogram(imgs_mask_train))
 
-    # if os.path.exists(save_path+'data.npy')==False:
     np.save(save_path+'mean.npy',mean_image)
     np.save(save_path+'std.npy',std_image)
     np.save(save_path+'data.npy',imgs_train.astype(np.float32))

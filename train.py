@@ -14,7 +14,7 @@ from skimage.transform import rotate, resize
 from skimage import data
 import matplotlib.pyplot as plt
 img_rows = 160 
-img_cols = 224 
+img_cols = 160 
 
 smooth = 1.
 
@@ -30,7 +30,7 @@ def dice_coef_loss(y_true, y_pred):
     return 1.-dice_coef(y_true, y_pred)
 
 
-def augmentation(image, imageB, org_width=160,org_height=224, width=190, height=262):
+def augmentation(image, imageB, org_width=5000,org_height=5000, width=5000, height=5000):
     max_angle=20
     image=cv2.resize(image,(height,width))
     imageB=cv2.resize(imageB,(height,width))
@@ -82,14 +82,14 @@ def get_unet():
 
     conv5 = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(pool4)
     conv5 = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(conv5)
-    pool5 = MaxPooling2D(pool_size=(2, 2))(conv5)
+    # pool5 = MaxPooling2D(pool_size=(2, 2))(conv5)
 
-    convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(pool5)
-    convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(convdeep)
+    # convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(pool5)
+    # convdeep = Convolution2D(1024, 3, 3, activation='relu', border_mode='same')(convdeep)
     
-    upmid = merge([Convolution2D(512, 2, 2, border_mode='same')(UpSampling2D(size=(2, 2))(convdeep)), conv5], mode='concat', concat_axis=1)
-    convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(upmid)
-    convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(convmid)
+    # upmid = merge([Convolution2D(512, 2, 2, border_mode='same')(UpSampling2D(size=(2, 2))(convdeep)), conv5], mode='concat', concat_axis=1)
+    # convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(upmid)
+    # convmid = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(convmid)
 
     up6 = merge([Convolution2D(256, 2, 2,activation='relu', border_mode='same')(UpSampling2D(size=(2, 2))(conv5)), conv4], mode='concat', concat_axis=1)
     conv6 = Convolution2D(256, 3, 3, activation='relu', border_mode='same')(up6)
@@ -107,11 +107,13 @@ def get_unet():
     conv9 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(up9)
     conv9 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(conv9)
 
-    conv10 = Convolution2D(1, 1, 1, activation='sigmoid')(conv9)
+    conv10 = Convolution2D(1, 1, 1, activation='relu')(conv9)
 
     model = Model(input=inputs, output=conv10)
 
-    model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+    # model.compile(optimizer=Adam(lr=1e-5), loss=dice_coef_loss, metrics=[dice_coef])
+    model.compile(optimizer=Adam(lr=1e-5), loss='mean_squared_error', metrics=['accuracy'])
+    # model.compile(optimizer='sgd', loss='mean_squared_error')
 
     return model
 
@@ -157,7 +159,7 @@ def train_and_predict():
     print('-'*30)
     print('Fitting model...')
     print('-'*30)
-    model.fit(imgs_train, imgs_mask_train, batch_size=32, nb_epoch=2, verbose=1, shuffle=True,callbacks=[model_checkpoint])
+    model.fit(imgs_train, imgs_mask_train, batch_size=1, nb_epoch=2, verbose=1, shuffle=True,callbacks=[model_checkpoint])
     """
     batch_size=32
     max_iters=10000
@@ -202,6 +204,28 @@ def train_and_predict():
     imgs_mask_test = model.predict(imgs_test, verbose=1)
     np.save('imgs_mask_test.npy', imgs_mask_test)
 
+def predict():
+    model = get_unet()
+    model_checkpoint = ModelCheckpoint('unet.hdf5', monitor='loss',verbose=1, save_best_only=True)
+
+    imgs_test, imgs_id_test = load_test_data()
+    imgs_test = preprocess(imgs_test) # TODO: bug
+
+    imgs_test = imgs_test.astype('float32')
+    imgs_test -= np.load('save/mean.npy')
+    imgs_test /=np.load('save/std.npy')
+
+    print('-'*30)
+    print('Loading saved weights...')
+    print('-'*30)
+    model.load_weights('unet.hdf5')
+
+    print('-'*30)
+    print('Predicting masks on test data...')
+    print('-'*30)
+    imgs_mask_test = model.predict(imgs_test, verbose=1)
+    imgs_mast_test = imgs_mask_test.argmax(axis=-1)
+    np.save('imgs_mask_test.npy', imgs_mask_test)
 
 if __name__ == '__main__':
     train_and_predict()

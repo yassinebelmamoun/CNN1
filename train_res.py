@@ -16,7 +16,7 @@ from keras.layers.convolutional import (
     AveragePooling2D
 )
 from keras.layers.normalization import BatchNormalization
-from keras.utils.vis_utils import plot_model as plot
+from keras.utils.visualize_util import plot
 import cv2
 import numpy as np
 from keras.models import Model
