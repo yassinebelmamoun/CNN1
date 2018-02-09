@@ -1,0 +1,1 @@
+CMD :in the directory of the gdal_retile file : gdal_retile.py -v -r bilinear -levels 1 -ps 400 400 -co "COMPRESS=JPEG" -targetDir santiago_decoupe Santiago_ortho_ref_RGB.tif
