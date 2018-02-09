@@ -5,7 +5,7 @@
 Please install all the requirements:
 
 ```
-pip3 install -r requirements
+pip3 install -r requirements.txt
 ```
 
 We use an old version of Keras (Keras 1.2)
